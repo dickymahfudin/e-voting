@@ -22,13 +22,11 @@ router.get("/user", async (req, res) => {
         if (el.status) {
           return res.json({
             status: "sudah",
-            id: el.id,
             nama: el.nama,
           });
         }
         return res.json({
           status: "belum",
-          id: el.id,
           nama: el.nama,
         });
       }
@@ -68,15 +66,34 @@ router.get("/candidate", async (req, res) => {
 });
 
 router.post("/result", async (req, res) => {
-  const { selection, id } = req.body;
-  console.log({ selection, id });
+  const { selection, uid } = req.body;
   const status = true;
-  const user = await models.User.findByPk(id);
-  user.update({ status });
-  const selectionHash = await bcrypt.hash(selection, 10);
-  await models.Result.create({ selection: selectionHash });
-  return res.status(201).json({
-    status: "succes",
+  if (selection === "satu" || selection === "dua") {
+    const users = await models.User.findAll();
+    for (const key in users) {
+      if (users.hasOwnProperty(key)) {
+        const el = users[key];
+        const isUid = await bcrypt.compare(uid, el.uid);
+        if (isUid) {
+          if (!el.status) {
+            el.update({ status });
+            const selectionHash = await bcrypt.hash(selection, 10);
+            await models.Result.create({ selection: selectionHash });
+            return res.status(201).json({
+              status: "success",
+            });
+          }
+          return res.status(409).json({
+            status: "error",
+            message: "User Sudah Memilih",
+          });
+        }
+      }
+    }
+  }
+  return res.status(404).json({
+    status: "error",
+    message: "Kartu Tidak Terdaftar",
   });
 });
 module.exports = router;
