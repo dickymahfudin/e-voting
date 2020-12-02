@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DIsm</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+    <style>
+      body {
+        /* background-image: linear-gradient(-90deg, red, yellow); */
+        background-image: url("bg.jpg");
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        background-color: #2196f3;
+        padding: 10px;
+      }
+      .grid-item {
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.8);
+        padding: 20px;
+        font-size: 35px;
+        text-align: center;
+      }
+      img {
+        width: 50%;
+        height: min-content;
+      }
+      .text {
+        background: #2196f3;
+        font-size: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="text-align: center">
+      <span class="text">Hasil Pemilihan</span>
+    </div>
+    <div style="position: fixed; bottom: 0px">
+      <div class="grid-container">
+        <div class="grid-item">
+          <img src="1.jpg" alt="1" />
+          <div>Jokowi</div>
+        </div>
+        <div class="grid-item">
+          <div style="height: 500px; width: 700px">
+            <canvas id="myChart"></canvas>
+          </div>
+        </div>
+        <div class="grid-item">
+          <img src="2.jpg" alt="2" />
+          <div>Prabowo</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var ctx = document.getElementById("myChart").getContext("2d");
+      var myChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          datasets: [
+            {
+              label: "Jokowi",
+              data: [40],
+              backgroundColor: ["rgba(229, 19, 19, 0.85)"],
+              borderWidth: 1,
+              labels: ["Jokowi"],
+            },
+            {
+              label: "Prabowo",
+              data: [30],
+              backgroundColor: ["rgba(17, 134, 237, 0.74)"],
+            },
+          ],
+        },
+        options: {
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true,
+                },
+              },
+            ],
+          },
+          responsive: true,
+          legend: {
+            position: "bottom",
+            display: true,
+          },
+          hover: {
+            animationDuration: 0,
+          },
+          animation: {
+            duration: 1,
+            onComplete: function () {
+              var chartInstance = this.chart,
+                ctx = chartInstance.ctx;
+
+              ctx.font = Chart.helpers.fontString(
+                Chart.defaults.global.defaultFontSize,
+                Chart.defaults.global.defaultFontStyle,
+                Chart.defaults.global.defaultFontFamily
+              );
+              ctx.textAlign = "center";
+              ctx.textBaseline = "bottom";
+
+              this.data.datasets.forEach(function (dataset, i) {
+                var meta = chartInstance.controller.getDatasetMeta(i);
+                meta.data.forEach(function (bar, index) {
+                  var data = dataset.data[index];
+                  ctx.font = "40px Verdana";
+                  ctx.fillStyle = "#ffffff";
+                  ctx.fillText(data, bar._model.x, bar._model.y + 100);
+                });
+              });
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
