@@ -119,4 +119,36 @@ router.get("/reset/result", async (req, res) => {
     .json({ status: "success", message: "Delete All Data Result " });
 });
 
+router.get("/post/result", async (req, res) => {
+  const { selection, uid } = req.query;
+  const status = true;
+  if (selection === "satu" || selection === "dua") {
+    const users = await models.User.findAll();
+    for (const key in users) {
+      if (users.hasOwnProperty(key)) {
+        const el = users[key];
+        const isUid = await bcrypt.compare(uid, el.uid);
+        if (isUid) {
+          if (!el.status) {
+            el.update({ status });
+            const selectionHash = await bcrypt.hash(selection, 10);
+            await models.Result.create({ selection: selectionHash });
+            return res.status(201).json({
+              status: "success",
+            });
+          }
+          return res.status(409).json({
+            status: "error",
+            message: "User Sudah Memilih",
+          });
+        }
+      }
+    }
+  }
+  return res.status(404).json({
+    status: "error",
+    message: "Kartu Tidak Terdaftar",
+  });
+});
+
 module.exports = router;

@@ -1,8 +1,10 @@
 [
-   {
-      "nama":"Jokowi"
-   },
-   {
-      "nama":"Prabowo"
-   }
+  {
+    "nama": "Ir H Jokowi",
+    "full_name": "Ir. H. Joko Widodo"
+  },
+  {
+    "nama": "H. Prabowo S D",
+    "full_name": "H. Prabowo Subianto D"
+  }
 ]

@@ -26,8 +26,7 @@
         text-align: center;
       }
       img {
-        width: 50%;
-        height: min-content;
+        width: 70%;
       }
       .text {
         background: #2196f3;
@@ -37,91 +36,105 @@
   </head>
   <body>
     <div style="text-align: center">
-      <span class="text">Hasil Pemilihan</span>
+      <span class="text">Hasil Perolehan Suara</span>
     </div>
     <div style="position: fixed; bottom: 0px">
       <div class="grid-container">
         <div class="grid-item">
           <img src="1.jpg" alt="1" />
-          <div>Jokowi</div>
+          <div><%= candidate1.full_name %></div>
         </div>
         <div class="grid-item">
-          <div style="height: 500px; width: 700px">
+          <div style="height: 500px; width: 700px; margin-top: 100px">
             <canvas id="myChart"></canvas>
           </div>
         </div>
         <div class="grid-item">
           <img src="2.jpg" alt="2" />
-          <div>Prabowo</div>
+          <div><%= candidate2.full_name %></div>
         </div>
       </div>
     </div>
 
     <script>
-      var ctx = document.getElementById("myChart").getContext("2d");
-      var myChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-          datasets: [
-            {
-              label: "Jokowi",
-              data: [40],
-              backgroundColor: ["rgba(229, 19, 19, 0.85)"],
-              borderWidth: 1,
-              labels: ["Jokowi"],
-            },
-            {
-              label: "Prabowo",
-              data: [30],
-              backgroundColor: ["rgba(17, 134, 237, 0.74)"],
-            },
-          ],
-        },
-        options: {
-          scales: {
-            yAxes: [
+      const getData = async () => {
+        const response = await fetch("/api/result", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        return response.json(); // parses JSON response into native JavaScript objects
+      };
+      const main = async () => {
+        const result = await getData().then((e) => e);
+        const ctx = document.getElementById("myChart").getContext("2d");
+        const myChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            datasets: [
               {
-                ticks: {
-                  beginAtZero: true,
-                },
+                label: "Jokowi",
+                data: [result.satu],
+                backgroundColor: ["rgba(229, 19, 19, 0.85)"],
+                borderWidth: 1,
+                labels: ["Jokowi"],
+              },
+              {
+                label: "Prabowo",
+                data: [result.dua],
+                backgroundColor: ["rgba(17, 134, 237, 0.74)"],
               },
             ],
           },
-          responsive: true,
-          legend: {
-            position: "bottom",
-            display: true,
-          },
-          hover: {
-            animationDuration: 0,
-          },
-          animation: {
-            duration: 1,
-            onComplete: function () {
-              var chartInstance = this.chart,
-                ctx = chartInstance.ctx;
+          options: {
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true,
+                  },
+                },
+              ],
+            },
+            responsive: true,
+            legend: {
+              position: "bottom",
+              display: true,
+            },
+            hover: {
+              animationDuration: 0,
+            },
+            animation: {
+              duration: 1,
+              onComplete: function () {
+                var chartInstance = this.chart,
+                  ctx = chartInstance.ctx;
 
-              ctx.font = Chart.helpers.fontString(
-                Chart.defaults.global.defaultFontSize,
-                Chart.defaults.global.defaultFontStyle,
-                Chart.defaults.global.defaultFontFamily
-              );
-              ctx.textAlign = "center";
-              ctx.textBaseline = "bottom";
+                ctx.font = Chart.helpers.fontString(
+                  Chart.defaults.global.defaultFontSize,
+                  Chart.defaults.global.defaultFontStyle,
+                  Chart.defaults.global.defaultFontFamily
+                );
+                ctx.textAlign = "center";
+                ctx.textBaseline = "bottom";
 
-              this.data.datasets.forEach(function (dataset, i) {
-                var meta = chartInstance.controller.getDatasetMeta(i);
-                meta.data.forEach(function (bar, index) {
-                  var data = dataset.data[index];
-                  ctx.font = "40px Verdana";
-                  ctx.fillStyle = "#ffffff";
-                  ctx.fillText(data, bar._model.x, bar._model.y + 100);
+                this.data.datasets.forEach(function (dataset, i) {
+                  var meta = chartInstance.controller.getDatasetMeta(i);
+                  meta.data.forEach(function (bar, index) {
+                    var data = dataset.data[index];
+                    ctx.font = "40px Verdana";
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillText(data, bar._model.x, bar._model.y + 100);
+                  });
                 });
-              });
+              },
             },
           },
-        },
-      });
+        });
+      };
+
+      main();
     </script>
   </body>
 </html>
