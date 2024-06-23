@@ -1,140 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DIsm</title>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<style>
+  .card-header {
+    font-size: 1.5rem;
+  }
 
-    <style>
-      body {
-        /* background-image: linear-gradient(-90deg, red, yellow); */
-        background-image: url("bg.jpg");
+  .card-title {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .card-footer {
+    font-size: 0.9rem;
+  }
+
+  .container-lg {
+    margin-top: 2rem;
+  }
+
+  .card {
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .header-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  .sub-header-text {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const response = await fetch("/api/result/percentage");
+      const data = await response.json();
+
+      if (data.status === "success") {
+        document.getElementById("kandidat1-percentage").innerText = `${data.satu}%`;
+        document.getElementById("kandidat2-percentage").innerText = `${data.dua}%`;
+        document.getElementById("kandidat3-percentage").innerText = `${data.tiga}%`;
+        document.getElementById("total-user").innerText = `Total Data: ${data.totalUser}`;
+        document.getElementById("total-voted").innerText = `Total Sudah Memilih: ${data.totalVoted}`;
       }
-      .grid-container {
-        display: grid;
-        grid-template-columns: auto auto auto;
-        background-color: #2196f3;
-        padding: 10px;
-      }
-      .grid-item {
-        background-color: rgba(255, 255, 255, 0.8);
-        border: 1px solid rgba(0, 0, 0, 0.8);
-        padding: 20px;
-        font-size: 35px;
-        text-align: center;
-      }
-      img {
-        width: 70%;
-      }
-      .text {
-        background: #2196f3;
-        font-size: 80px;
-      }
-    </style>
-  </head>
-  <body>
-    <div style="text-align: center">
-      <span class="text">Hasil Perolehan Suara</span>
-    </div>
-    <div style="position: fixed; bottom: 0px">
-      <div class="grid-container">
-        <div class="grid-item">
-          <img src="1.jpg" alt="1" />
-          <div><%= candidate1.full_name %></div>
-        </div>
-        <div class="grid-item">
-          <div style="height: 500px; width: 700px; margin-top: 100px">
-            <canvas id="myChart"></canvas>
+    } catch (error) {
+      console.error("Error fetching percentages:", error);
+    }
+  });
+</script>
+
+<div class="container-lg text-center">
+  <h1 class="header-text">Hasil Perolehan Suara</h1>
+  <div class="sub-header-text">
+    <h4 id="total-user" class="text-info">Total Data: 0</h4>
+    <h4 id="total-voted" class="text-success">Total Sudah Memilih: 0</h4>
+  </div>
+
+  <div class="container d-flex justify-content-center align-items-center">
+    <div class="row">
+      <div class="col-md-4 d-flex mb-4">
+        <div class="card text-center w-100 d-flex flex-column shadow">
+          <div class="card-header bg-danger text-white">
+            Kandidat 1
+          </div>
+          <img src="1.png" class="card-img-top" alt="Kandidat 1">
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h2 class="card-title">Anies Muhaimin</h2>
+            <h4 class="card-text" id="kandidat1-percentage">0%</h4>
+          </div>
+          <div class="card-footer text-muted">
+            Update terbaru
           </div>
         </div>
-        <div class="grid-item">
-          <img src="2.jpg" alt="2" />
-          <div><%= candidate2.full_name %></div>
+      </div>
+
+      <div class="col-md-4 d-flex mb-4">
+        <div class="card text-center w-100 d-flex flex-column shadow">
+          <div class="card-header bg-warning text-white">
+            Kandidat 2
+          </div>
+          <img src="2.png" class="card-img-top" alt="Kandidat 2">
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h2 class="card-title">Prabowo Gibran</h2>
+            <h4 class="card-text" id="kandidat2-percentage">0%</h4>
+          </div>
+          <div class="card-footer text-muted">
+            Update terbaru
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 d-flex mb-4">
+        <div class="card text-center w-100 d-flex flex-column shadow">
+          <div class="card-header bg-success text-white">
+            Kandidat 3
+          </div>
+          <img src="3.png" class="card-img-top" alt="Kandidat 3">
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <h2 class="card-title">Ganjar Mahfud</h2>
+            <h4 class="card-text" id="kandidat3-percentage">0%</h4>
+          </div>
+          <div class="card-footer text-muted">
+            Update terbaru
+          </div>
         </div>
       </div>
     </div>
-
-    <script>
-      const getData = async () => {
-        const response = await fetch("/api/result", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        return response.json(); // parses JSON response into native JavaScript objects
-      };
-      const main = async () => {
-        const result = await getData().then((e) => e);
-        const ctx = document.getElementById("myChart").getContext("2d");
-        const myChart = new Chart(ctx, {
-          type: "bar",
-          data: {
-            datasets: [
-              {
-                label: "Jokowi",
-                data: [result.satu],
-                backgroundColor: ["rgba(229, 19, 19, 0.85)"],
-                borderWidth: 1,
-                labels: ["Jokowi"],
-              },
-              {
-                label: "Prabowo",
-                data: [result.dua],
-                backgroundColor: ["rgba(17, 134, 237, 0.74)"],
-              },
-            ],
-          },
-          options: {
-            scales: {
-              yAxes: [
-                {
-                  ticks: {
-                    beginAtZero: true,
-                  },
-                },
-              ],
-            },
-            responsive: true,
-            legend: {
-              position: "bottom",
-              display: true,
-            },
-            hover: {
-              animationDuration: 0,
-            },
-            animation: {
-              duration: 1,
-              onComplete: function () {
-                var chartInstance = this.chart,
-                  ctx = chartInstance.ctx;
-
-                ctx.font = Chart.helpers.fontString(
-                  Chart.defaults.global.defaultFontSize,
-                  Chart.defaults.global.defaultFontStyle,
-                  Chart.defaults.global.defaultFontFamily
-                );
-                ctx.textAlign = "center";
-                ctx.textBaseline = "bottom";
-
-                this.data.datasets.forEach(function (dataset, i) {
-                  var meta = chartInstance.controller.getDatasetMeta(i);
-                  meta.data.forEach(function (bar, index) {
-                    var data = dataset.data[index];
-                    ctx.font = "40px Verdana";
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillText(data, bar._model.x, bar._model.y + 100);
-                  });
-                });
-              },
-            },
-          },
-        });
-      };
-
-      main();
-    </script>
-  </body>
-</html>
+  </div>
+</div>

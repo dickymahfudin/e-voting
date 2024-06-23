@@ -1,0 +1,23 @@
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="text-center mb-4">Form Registrasi</h2>
+        </div>
+
+        <div class="card-body">
+            <form class="shadow p-4 rounded bg-light" action="api/user" method="post">
+                <div class="mb-3">
+                    <label for="nama" class="form-label">Nama</label>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Masukkan Nama" required>
+                </div>
+                <div class="mb-3">
+                    <label for="uid" class="form-label">ID EKTP</label>
+                    <input type="text" class="form-control" name="uid" id="uid" value="<%= ektp?.ektp %>" disabled>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" <%=ektp?.ektp ? '' : 'disabled' %>>
+                    <i class="fas fa-paper-plane"></i> Submit
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

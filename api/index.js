@@ -10,7 +10,7 @@ router.get("/user", async (req, res) => {
   if (!uid) {
     return res.json({
       status: "success",
-      data: users,
+      data: users[0],
     });
   }
 
@@ -38,14 +38,13 @@ router.get("/user", async (req, res) => {
 });
 
 router.post("/user", async (req, res) => {
-  const { nama, uid } = req.body;
-  const uidHash = await bcrypt.hash(uid, 10);
-  const data = { nama, uid: uidHash };
-  const createUser = await models.User.create(data);
-  return res.status(201).json({
-    status: "success",
-    data: createUser,
-  });
+  const { name } = req.body;
+  const ektp = await models.Temp.findByPk(1);
+  const data = { nama: name, uid: ektp.ektp };
+  ektp.ektp = null;
+  await ektp.save();
+  await models.User.create(data);
+  return res.redirect("/");
 });
 
 router.put("/user/:id", async (req, res) => {
@@ -97,18 +96,34 @@ router.post("/result", async (req, res) => {
   });
 });
 
-router.get("/result", async (req, res) => {
-  let satu = 0,
-    dua = 0;
+router.get("/result/percentage", async (req, res) => {
   const results = await models.Result.findAll();
+  const totalUser = await models.User.count();
+  const totalVoted = await models.User.count({ where: { status: true } });
+  let satu = 0, dua = 0, tiga = 0;
+
   await results.reduce(async (promise, el) => {
+    await promise;
     const isSatu = await bcrypt.compare("satu", el.selection);
     const isDua = await bcrypt.compare("dua", el.selection);
-    isSatu && satu++;
-    isDua && dua++;
+    const isTiga = await bcrypt.compare("tiga", el.selection);
+    if (isSatu) satu++;
+    if (isDua) dua++;
+    if (isTiga) tiga++;
   }, Promise.resolve());
 
-  return res.json({ status: "success", satu, dua });
+  const satuPercentage = (satu / totalUser) * 100;
+  const duaPercentage = (dua / totalUser) * 100;
+  const tigaPercentage = (tiga / totalUser) * 100;
+
+  return res.json({
+    status: "success",
+    satu: satuPercentage.toFixed(2),
+    dua: duaPercentage.toFixed(2),
+    tiga: tigaPercentage.toFixed(2),
+    totalUser,
+    totalVoted
+  });
 });
 
 router.get("/reset/result", async (req, res) => {
@@ -119,10 +134,11 @@ router.get("/reset/result", async (req, res) => {
     .json({ status: "success", message: "Delete All Data Result " });
 });
 
-router.get("/post/result", async (req, res) => {
-  const { selection, uid } = req.query;
+router.post("/post/result", async (req, res) => {
+  const { selection, uid } = req.body;
+
   const status = true;
-  if (selection === "satu" || selection === "dua") {
+  if (selection === "satu" || selection === "dua" || selection === "tiga") {
     const users = await models.User.findAll();
     for (const key in users) {
       if (users.hasOwnProperty(key)) {
@@ -148,6 +164,27 @@ router.get("/post/result", async (req, res) => {
   return res.status(404).json({
     status: "error",
     message: "Kartu Tidak Terdaftar",
+  });
+});
+
+router.post("/register", async (req, res) => {
+  const { uid } = req.body;
+  console.log({ uid });
+  console.log(req.headers);
+  const findEktp = await models.Temp.findByPk(1);
+  const ektp = await bcrypt.hash(uid, 10);
+  if (findEktp) {
+    await findEktp.update({ ektp });
+  } else {
+    await models.Temp.create({ ektp });
+  }
+  return res.status(201).json({ status: "success" });
+});
+
+router.get("/apa", (req, res) => {
+  return res.status(409).json({
+    status: "error",
+    message: "User Sudah Memilih",
   });
 });
 
