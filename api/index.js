@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const models = require("../models");
 
 router.get("/user", async (req, res) => {
@@ -100,7 +100,9 @@ router.get("/result/percentage", async (req, res) => {
   const results = await models.Result.findAll();
   const totalUser = await models.User.count();
   const totalVoted = await models.User.count({ where: { status: true } });
-  let satu = 0, dua = 0, tiga = 0;
+  let satu = 0,
+    dua = 0,
+    tiga = 0;
 
   await results.reduce(async (promise, el) => {
     await promise;
@@ -122,7 +124,7 @@ router.get("/result/percentage", async (req, res) => {
     dua: duaPercentage.toFixed(2),
     tiga: tigaPercentage.toFixed(2),
     totalUser,
-    totalVoted
+    totalVoted,
   });
 });
 

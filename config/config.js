@@ -1,9 +1,15 @@
 require("dotenv").config();
-const { DB_USER, DB_PASSWORD, DB_DB, DB_HOST, DB_CONNECTION } = process.env;
+const {
+  POSTGRES_USER,
+  POSTGRES_PASSWORD,
+  POSTGRES_DB,
+  DB_CONNECTION,
+  DB_HOST,
+} = process.env;
 
-const username = DB_USER;
-const password = DB_PASSWORD;
-const database = DB_DB;
+const username = POSTGRES_USER;
+const password = POSTGRES_PASSWORD;
+const database = POSTGRES_DB;
 const host = DB_HOST;
 const dialect = DB_CONNECTION;
 
