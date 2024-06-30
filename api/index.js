@@ -104,15 +104,16 @@ router.get("/result/percentage", async (req, res) => {
     dua = 0,
     tiga = 0;
 
-  await results.reduce(async (promise, el) => {
-    await promise;
-    const isSatu = await bcrypt.compare("satu", el.selection);
-    const isDua = await bcrypt.compare("dua", el.selection);
-    const isTiga = await bcrypt.compare("tiga", el.selection);
-    if (isSatu) satu++;
-    if (isDua) dua++;
-    if (isTiga) tiga++;
-  }, Promise.resolve());
+  await Promise.all(
+    results.map(async el => {
+      const isSatu = await bcrypt.compare("satu", el.selection);
+      const isDua = await bcrypt.compare("dua", el.selection);
+      const isTiga = await bcrypt.compare("tiga", el.selection);
+      if (isSatu) satu++;
+      if (isDua) dua++;
+      if (isTiga) tiga++;
+    })
+  );
 
   const satuPercentage = (satu / totalUser) * 100;
   const duaPercentage = (dua / totalUser) * 100;
@@ -131,9 +132,7 @@ router.get("/result/percentage", async (req, res) => {
 router.get("/reset/result", async (req, res) => {
   await models.Result.destroy({ where: {} });
   await models.User.update({ status: false }, { where: { status: true } });
-  return res
-    .status(200)
-    .json({ status: "success", message: "Delete All Data Result " });
+  return res.status(200).json({ status: "success", message: "Delete All Data Result " });
 });
 
 router.post("/post/result", async (req, res) => {
