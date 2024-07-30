@@ -27,6 +27,9 @@
                   <input type="text" name="nama" value="<%= user.nama %>" class="form-control flex-grow-1" />
                   <button type="submit" class="btn btn-primary ms-2"><i class="fas fa-edit"></i> Edit</button>
                 </form>
+                <form action="/users/delete/<%= user.id %>" method="POST" class="delete-form d-inline">
+                  <button type="submit" class="btn btn-danger ms-2"><i class="fas fa-trash"></i> Hapus</button>
+                </form>
               </td>
             </tr>
             <% }) %>

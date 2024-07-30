@@ -19,9 +19,7 @@ app.use(express.static("./public"));
 app.set("view engine", "ejs");
 app.set("layout", "./layout");
 app.use(bodyParser.urlencoded({ extended: true }));
-app.listen(PORT, () =>
-  console.log(`Server Running on : http://localhost:${PORT}`)
-);
+app.listen(PORT, () => console.log(`Server Running on : http://localhost:${PORT}`));
 
 app.get("/", async (req, res) => {
   const candidates = await models.Candidate.findAll();
@@ -35,10 +33,15 @@ app.get("/register", async (req, res) => {
   res.render("register", { ektp });
 });
 
-
 app.get("/users", async (req, res) => {
-  const users = await models.User.findAll({ order: [['id', 'DESC']] });
+  const users = await models.User.findAll({ order: [["id", "DESC"]] });
   res.render("user", { users });
+});
+
+app.post("/users/delete/:id", async (req, res) => {
+  const { id } = req.params;
+  await models.User.destroy({ where: { id, status: false } });
+  res.redirect("/users");
 });
 
 app.post("/users/edit/:id", async (req, res) => {
